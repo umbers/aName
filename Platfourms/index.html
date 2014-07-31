@@ -1,0 +1,34 @@
+<docktype.html>
+<html>
+<head>
+<meta charset = "UTF-8">
+<title>Attack on Loot Chest</title>
+<script src = "../build/phaser.min.js"></script>
+<script src = "src/boot.js" ></script>
+<script src = "src/game.js" ></script>
+</head>
+
+<body>
+                                      
+<div id = "game"></div>
+
+<script type = "text/javascript">
+
+(
+function()
+{
+var game = new Phaser.Game(320,240, Phaser.AUTO, 'game');
+
+game.state.add('boot',LootChest.boot);
+game.state.add('game',LootChest.game);
+
+game.state.start('boot');
+
+
+
+})();
+
+</script>
+</body>
+
+

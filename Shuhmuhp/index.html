@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>hello phaser!</title>
+        <script src="../build/phaser.min.js"></script>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+
+    window.onload = function() {
+
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+		var text;
+		var counter = 0;
+		var sprite;
+		var ball;
+		var paddle;
+		var brick;
+		var ballOnPaddle = true;
+		var lives = 3;
+		var score = 0;
+		var scoreText;
+		var livesText;
+		var introText;
+		
+		var test;
+		
+		var s;
+
+        function preload () {
+
+            game.load.atlas('breakout','Assets/Sprites/breakout.png','Assets/Sprites/breakout.json');
+			
+			game.load.image('starfield','Assets/Sprites/starfield.jpg');
+
+        }
+
+        function create () {
+
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+			
+			game.physics.arcade.checkCollision.down = false;
+			
+			s = game.add.tileSprite(0,0,800,600, 'starfield');
+			
+			bricks = game.add.group();
+			
+			bricks.enableBody = true;
+			
+			bricks.physicsBodyType = Phaser.Physics.ARCADE;
+			
+			var brick;
+			
+			for(var y = 0; y < 4; y++)
+			{
+	
+		
+			for(var x = 0; x < 15; x++)
+			{
+			brick = bricks.create(120 + (x * 36), 100 + (y * 52), 'breakout', 'brick_' + (y+1) +'_1.png');
+			brick.body.bounce.set(1);
+			brick.body.immovable = true;
+			
+			}
+			
+			}
+			
+			paddle = game.add.sprite(game.world.centerX, 500, 'breakout','paddle_big.png');
+			paddle.anchor.setTo(0.5,0.5);
+			
+			game.physics.enable(paddle, Phaser.Physics.ARCADE);
+			
+			paddle.body.collideWorldBound = true;
+			paddle.body.bounce.set(1);
+			paddle.body.immovable = true;
+			
+			ball = game.add.sprite(game.world.centerX,paddle.y - 16,'breakout','ball_1.png')
+			ball.anchor.set(0.5);
+			ball.checkWorldBounds = true;
+			
+			game.physics.enable(ball, Phaser.Physics.ARCADE);
+			
+			ball.body.collideWorldBounds = true;
+			ball.body.bounce.set(1);
+			
+			ball.animations.add('spin'['ball_1.png','ball_2.png','ball_3.png','ball_4.png','ball_5.png'], 50, true, false);
+			
+			ball.events.onOutOfBounds.add(ballLost, this);
+			
+			scoreText = game.add.text(32,550, 'score: 0',{font: "20px arial", fill: "#ffffff", align: "left"});
+			livesText = game.add.text(600,550, 'lives: 3',{font: "20px arial",fill: "#ffffff", align: "left"});
+
+			introText = game.add.text(game.world.centerX,400, '-click to start-', {font: "40px arial", fill: "#ffffff", align: "center"});
+			introText.anchor.setTo(0.5,0.5);
+			game.input.onDown.add(releaseBall, this);
+        }
+		
+		
+		function update()
+		{
+	paddle.body.x = game.input.x
+	if (paddle.x < 24)
+		{
+		paddle.x = 24;
+		}
+		else if (paddle.x > game.width - 24)
+		{
+		paddle.x = game.width - 24;
+		}
+		
+		if (ballOnPaddle)
+		{
+		ball.body.x = paddle.x;
+		}
+		else
+		{
+		game.physics.arcade.collide(ball,paddle, ballHitPaddle, null, this);
+		game.physics.arcade.collide(ball,bricks, ballHitBrick, null, this)
+		}
+		}
+		
+		function ballHitBrick(_ball, _brick)
+		{
+		_brick.kill();
+		
+		score += 10
+		scoreText.text = 'score' + score;
+		if(bricks.countLiving() == 0)
+		{
+		score += 1000;
+		scoreText.text = 'score' + score;
+		introText.text = '-next level-';
+		
+		ballOnPaddle = true
+		ball.body.velocity.set(0);
+		ball.x = paddle.x + 16;
+		ball.y = paddle.y - 16;
+		ball.animations.stop();
+		
+		bricks.callAll('revive');
+		}
+		}
+		
+		function ballHitPaddle(_ball, _paddle)
+		{
+		var diff = 0
+		if(_ball.x < _paddle.x)
+		{
+		diff = paddle.x - ball.x;
+		_ball.body.velocity.x = (-16 * diff);
+		}
+		else if(_ball.x > _paddle.x)
+		{
+		diff = _ball.x - _paddle.x;
+		_ball.body.velocity.x = (16 * diff);
+		}
+		else
+		{
+		_ball.body.velocity.x = 3 + Math.random() * 12;
+		}
+		}
+		
+		function releaseBall ()
+		{
+		if(ballOnPaddle)
+		{
+		ballOnPaddle = false
+		ball.body.velocity.x = -300;
+		ball.body.velocity.y = -75
+		ball.animation.play('spin');
+		introText.visible = false;
+		}
+		}
+		
+		function ballLost()
+		{
+		'lives==';
+		livesText.text = 'lives' + lives;
+		if(lives == 0)
+		{
+		gameover();
+		}
+		else
+		{
+		ballOnPaddle = true;
+		ball.reset(paddle.body.x + 16, paddle.y - 16);
+		ball.animations.stop();
+		}
+		}
+		
+		function gameOver()
+		{
+		ball.body.velocity.setTo(0,0);
+		inroText.text = '-game over! Thanks Obama!'
+		intro.visible = true;
+		}
+		
+		function render()
+		{
+		game.debug.inputInfo(32,32);
+		}
+		
+
+
+    };
+
+    </script>
+
+    </body>
+</html>
