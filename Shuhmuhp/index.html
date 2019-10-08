@@ -11,23 +11,23 @@
 
     window.onload = function() {
 
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
-		var text;
-		var counter = 0;
-		var sprite;
-		var ball;
-		var paddle;
-		var brick;
-		var ballOnPaddle = true;
-		var lives = 3;
-		var score = 0;
-		var scoreText;
-		var livesText;
-		var introText;
+        let game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+		let text;
+		let counter = 0;
+		let sprite;
+		let ball;
+		let paddle;
+		let brick;
+		let ballOnPaddle = true;
+		let lives = 3;
+		let score = 0;
+		let scoreText;
+		let livesText;
+		let introText;
 		
-		var test;
+		let test;
 		
-		var s;
+		let s;
 
         function preload () {
 
